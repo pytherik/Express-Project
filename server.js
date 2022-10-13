@@ -22,6 +22,23 @@ app.use((req, res, next) => {                    //* middleware - placed between
   console.log(`${req.method} ${req.url} ${Date.now() - start}ms`);  //* time passing
 });
 
+app.use((express.json()));           //* transform json data accessable in req.body
+
+app.post('/friend', (req, res) => {
+  if (!req.body.name) {             //* throw error on missing data  
+    return res.status(400).json({   //* and return !important!
+      error: 'Missing friend name'
+    });
+  }
+
+  const newFriend = {
+    name: req.body.name,
+    id: friends.length
+  };
+  friends.push(newFriend);
+  res.json(newFriend);
+});
+
 app.get('/friends', (req, res) => {                  //* status 200, content-type: text/html
   res.json(friends);
 });
