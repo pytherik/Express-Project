@@ -4,34 +4,34 @@ const app = express();
 
 const PORT = 3000;
 
+const friends = [
+  {
+    id: 0,
+    name: 'Jimi Hendrix'
+  },  
+  {
+    id: 1,
+    name: 'Betty Davis'
+  },  
 
-app.get('/', (req, res) => {                  //* status 200, content-type: text/html
-  res.send(`<body style="background-color: #777;">
-              <h1 style="font-size: 65;text-align: center; color: #f9d4a3;">
-              Blödmann!
-              </h1>
-            </body>`);
+];
+
+app.get('/friends', (req, res) => {                  //* status 200, content-type: text/html
+  res.json(friends);
 });
 
-app.get('/messages', (req, res) => {        //* status 200, content-type: text/html
-  res.send(`<body style="background-color: #777;">
-              <h1 style="font-size: 65;text-align: center; color: #f9d4a3;margin-top: 10%">
-              Hallo Doofmann!
-              </h1>
-            </body>`);
-});
-
-app.get('/json', (req, res) => {            //* status 200, content-type: application/json
-  res.send({ name: 'Dummkopf!!!!' });
-});
-
-app.post('/messages', (req, res) => {
-  console.log('Bereite Nachrichten auf!')
-});
-  
-// * Status-Code and Content-Type are automatically added to the Header
+app.get('/friends/:friendId', (req, res) => {     //* handle incoming id-request
+  const friendId = req.params.friendId;
+  const friend = friends[friendId];
+  if (friend) {
+    res.status(200).json(friend);                 //* set status manually
+  } else {
+    res.status(404).json({                        //* set status manually
+     error: "Freund*in existiert nicht."
+    });
+  }
+})
 
 
 
-//* must be placed after routings!
 app.listen(PORT, () => console.log(`Server is lisening on port ${PORT}`));
