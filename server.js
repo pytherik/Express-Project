@@ -1,59 +1,31 @@
 const express = require('express');
+const friendsController = require('./controllers/friends.controller')
+const messagesController = require('./controllers/messages.controller');
 
 const app = express();
 
 const PORT = 3000;
 
-const friends = [
-  {
-    id: 0,
-    name: 'Jimi Hendrix'
-  },  
-  {
-    id: 1,
-    name: 'Betty Davis'
-  },  
 
-];
-
-app.use((req, res, next) => {                    //* middleware - placed between request and response
+app.use((req, res, next) => {      
   const start = Date.now();
-  next();                                        //* dont't forget! otherwise the app gets stuck.
-  console.log(`${req.method} ${req.url} ${Date.now() - start}ms`);  //* time passing
+  next();                                       
+  console.log(`${req.method} ${req.url} ${Date.now() - start}ms`);  
 });
 
-app.use((express.json()));           //* transform json data accessable in req.body
+app.use((express.json()));           
 
-app.post('/friend', (req, res) => {
-  if (!req.body.name) {             //* throw error on missing data  
-    return res.status(400).json({   //* and return !important!
-      error: 'Missing friend name'
-    });
-  }
+// * functions stored in controllers/friends.controller.js
 
-  const newFriend = {
-    name: req.body.name,
-    id: friends.length
-  };
-  friends.push(newFriend);
-  res.json(newFriend);
-});
+app.post('/friend', friendsController.postFriend);
+app.get('/friends', friendsController.getAllFriends);
+app.get('/friends/:friendId', friendsController.getOneFriend);
 
-app.get('/friends', (req, res) => {                  //* status 200, content-type: text/html
-  res.json(friends);
-});
+// * functions stored in controllers/messages.controller.js
 
-app.get('/friends/:friendId', (req, res) => {     //* handle incoming id-request
-  const friendId = Number(req.params.friendId);   //* converting to number not necessary
-  const friend = friends[friendId];
-  if (friend) {
-    res.status(200).json(friend);                //* set status manually
-  } else {
-    res.status(404).json({                        //* set status manually
-     error: "Freund*in existiert nicht."
-    });
-  }
-})
+app.get('/messages', messagesController.getMessages);
+app.post('messages', messagesController.postMessage);
+
 
 
 app.listen(PORT, () => console.log(`Server is lisening on port ${PORT}`));
